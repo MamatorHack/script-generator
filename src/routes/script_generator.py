@@ -49,7 +49,7 @@ def split_text_into_parts(text):
     try:
         # Étape 1 : Générer le contenu
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4.1",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
@@ -89,7 +89,8 @@ def adjust_text_length(text, min_chars, max_chars, text_type):
         # Texte trop court, demander à OpenAI de l'étendre
         prompt = f"""
         Le texte suivant est trop court ({current_length} caractères). 
-        Tu dois l'étendre pour qu'il fasse EXACTEMENT entre {min_chars} et {max_chars} caractères.
+        Tu dois l'étendre pour qu'il fasse EXACTEMENT entre {min_chars} et {max_chars} caractères. 
+        Tu dois absolument finir ta phrase même si ça dépasse légèrement le nombre de caractères.
         
         Type de texte : {text_type}
         Texte actuel : "{text}"
@@ -102,6 +103,7 @@ def adjust_text_length(text, min_chars, max_chars, text_type):
         prompt = f"""
         Le texte suivant est trop long ({current_length} caractères).
         Tu dois le raccourcir pour qu'il fasse EXACTEMENT entre {min_chars} et {max_chars} caractères.
+        Tu dois absolument finir ta phrase même si ça dépasse légèrement le nombre de caractères.
         
         Type de texte : {text_type}
         Texte actuel : "{text}"
@@ -112,9 +114,9 @@ def adjust_text_length(text, min_chars, max_chars, text_type):
     
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4.1",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3
+            temperature=0.7
         )
         
         adjusted_text = response.choices[0].message.content.strip()
@@ -176,9 +178,9 @@ def assign_emotions_to_parts(parts):
     
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4.1",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5
+            temperature=0.7
         )
         
         result = json.loads(response.choices[0].message.content)
@@ -280,10 +282,10 @@ def validate_script():
             # Vérifier les contraintes de longueur
             char_count = len(text)
             if part_type in ['accroche', 'call_to_action']:
-                if char_count < 50 or char_count > 100:
+                if char_count < 50 or char_count > 150:
                     validation_errors.append(f"Partie {part_id}: longueur incorrecte ({char_count} caractères, attendu 50-100)")
             elif part_type == 'content':
-                if char_count < 200 or char_count > 250:
+                if char_count < 200 or char_count > 300:
                     validation_errors.append(f"Partie {part_id}: longueur incorrecte ({char_count} caractères, attendu 200-250)")
             
             # Vérifier l'émotion
