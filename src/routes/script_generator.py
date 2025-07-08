@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
 from openai import OpenAI
-import re
+import os
 import json
 
 script_bp = Blueprint('script', __name__)
 
-# Configuration OpenAI
-OPENAI_API_KEY = "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"
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Configuration OpenAI via variable d'environnement
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
 # Liste des émotions officielles
 EMOTIONS = ["happy", "sad", "angry", "fearful", "disgusted", "surprised", "neutral"]
@@ -20,117 +20,134 @@ def split_text_into_parts(text):
     - Partie 5 (appel à l'action) : 50-100 caractères
     """
     
-    # Utiliser OpenAI pour découper intelligemment le texte
+    if client is None:
+        return None
+
+    # Première étape : demander à OpenAI de créer le contenu pour chaque partie
     prompt = f"""
-    Tu dois découper le texte suivant en exactement 5 parties selon ces critères STRICTS :
-    
-    1. Partie 1 (accroche) : EXACTEMENT entre 50 et 100 caractères - Une phrase d'accroche captivante
-    2. Partie 2 (contenu) : EXACTEMENT entre 200 et 250 caractères - Premier point principal du contenu
-    3. Partie 3 (contenu) : EXACTEMENT entre 200 et 250 caractères - Deuxième point principal du contenu
-    4. Partie 4 (contenu) : EXACTEMENT entre 200 et 250 caractères - Troisième point principal du contenu
-    5. Partie 5 (appel à l'action) : EXACTEMENT entre 50 et 100 caractères - Un appel à l'action engageant
-    
-    IMPORTANT : 
-    - Respecte ABSOLUMENT les limites de caractères pour chaque partie
-    - Compte les caractères avec précision
-    - Si nécessaire, reformule ou ajoute du contenu pour atteindre les bonnes longueurs
-    - Assure-toi que chaque partie soit complète et cohérente
-    
-    Texte à découper :
-    {text}
-    
-    Réponds uniquement avec un JSON contenant les 5 parties :
+    À partir du texte suivant, tu dois créer 5 parties distinctes pour un script vidéo :
+
+    Texte source : {text}
+
+    Crée 5 parties avec le contenu suivant :
+    1. Une accroche captivante qui résume l'idée principale
+    2. Le premier point clé du contenu avec des détails
+    3. Le deuxième point clé du contenu avec des détails  
+    4. Le troisième point clé du contenu avec des détails
+    5. Un appel à l'action engageant
+
+    Réponds avec un JSON contenant le contenu de chaque partie (sans te soucier de la longueur pour l'instant) :
     {{
-        "partie1": "texte de l'accroche (50-100 caractères)",
-        "partie2": "texte du contenu 1 (200-250 caractères)",
-        "partie3": "texte du contenu 2 (200-250 caractères)", 
-        "partie4": "texte du contenu 3 (200-250 caractères)",
-        "partie5": "texte de l'appel à l'action (50-100 caractères)"
+        "accroche": "contenu de l'accroche",
+        "contenu1": "premier point détaillé",
+        "contenu2": "deuxième point détaillé",
+        "contenu3": "troisième point détaillé", 
+        "appel_action": "appel à l'action"
     }}
     """
     
     try:
+        # Étape 1 : Générer le contenu
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
         
-        result = json.loads(response.choices[0].message.content)
+        content = json.loads(response.choices[0].message.content)
         
-        # Vérifier les contraintes de longueur
-        validation_errors = []
-        for i, (key, text_part) in enumerate(result.items(), 1):
-            char_count = len(text_part)
-            if i in [1, 5]:  # Accroche et appel à l'action
-                if char_count < 50 or char_count > 100:
-                    validation_errors.append(f"{key}: {char_count} caractères (attendu 50-100)")
-            else:  # Contenu
-                if char_count < 200 or char_count > 250:
-                    validation_errors.append(f"{key}: {char_count} caractères (attendu 200-250)")
+        # Étape 2 : Ajuster chaque partie pour respecter les contraintes de longueur
+        final_parts = {}
         
-        if validation_errors:
-            print(f"Erreurs de validation : {validation_errors}")
-            # Essayer une deuxième fois avec des instructions plus strictes
-            return split_text_into_parts_retry(text, validation_errors)
+        # Ajuster l'accroche (50-100 caractères)
+        final_parts["partie1"] = adjust_text_length(content["accroche"], 50, 100, "accroche captivante")
         
-        return result
+        # Ajuster les contenus (200-250 caractères)
+        final_parts["partie2"] = adjust_text_length(content["contenu1"], 200, 250, "contenu détaillé")
+        final_parts["partie3"] = adjust_text_length(content["contenu2"], 200, 250, "contenu détaillé")
+        final_parts["partie4"] = adjust_text_length(content["contenu3"], 200, 250, "contenu détaillé")
+        
+        # Ajuster l'appel à l'action (50-100 caractères)
+        final_parts["partie5"] = adjust_text_length(content["appel_action"], 50, 100, "appel à l'action")
+        
+        return final_parts
+        
     except Exception as e:
         print(f"Erreur lors du découpage : {e}")
         return None
 
-def split_text_into_parts_retry(text, previous_errors):
+def adjust_text_length(text, min_chars, max_chars, text_type):
     """
-    Deuxième tentative de découpage avec des instructions plus strictes
+    Ajuste la longueur d'un texte pour respecter les contraintes
     """
-    prompt = f"""
-    ATTENTION : La tentative précédente a échoué avec ces erreurs : {previous_errors}
+    current_length = len(text)
     
-    Tu DOIS découper le texte suivant en exactement 5 parties avec des longueurs PARFAITEMENT respectées :
+    if min_chars <= current_length <= max_chars:
+        return text
     
-    1. Partie 1 (accroche) : OBLIGATOIREMENT entre 50 et 100 caractères (ni plus, ni moins)
-    2. Partie 2 (contenu) : OBLIGATOIREMENT entre 200 et 250 caractères (ni plus, ni moins)
-    3. Partie 3 (contenu) : OBLIGATOIREMENT entre 200 et 250 caractères (ni plus, ni moins)
-    4. Partie 4 (contenu) : OBLIGATOIREMENT entre 200 et 250 caractères (ni plus, ni moins)
-    5. Partie 5 (appel à l'action) : OBLIGATOIREMENT entre 50 et 100 caractères (ni plus, ni moins)
-    
-    STRATÉGIE :
-    - Compte manuellement les caractères de chaque partie avant de répondre
-    - Ajoute des mots ou reformule si c'est trop court
-    - Raccourcis ou supprime des mots si c'est trop long
-    - Assure-toi que le sens reste cohérent
-    
-    Texte à découper :
-    {text}
-    
-    Réponds uniquement avec un JSON :
-    {{
-        "partie1": "texte exact avec 50-100 caractères",
-        "partie2": "texte exact avec 200-250 caractères",
-        "partie3": "texte exact avec 200-250 caractères", 
-        "partie4": "texte exact avec 200-250 caractères",
-        "partie5": "texte exact avec 50-100 caractères"
-    }}
-    """
+    if current_length < min_chars:
+        # Texte trop court, demander à OpenAI de l'étendre
+        prompt = f"""
+        Le texte suivant est trop court ({current_length} caractères). 
+        Tu dois l'étendre pour qu'il fasse EXACTEMENT entre {min_chars} et {max_chars} caractères.
+        
+        Type de texte : {text_type}
+        Texte actuel : "{text}"
+        
+        Étends ce texte en gardant le même sens et le même style, mais en ajoutant des détails pertinents.
+        Réponds uniquement avec le texte étendu, sans guillemets ni explications.
+        """
+    else:
+        # Texte trop long, demander à OpenAI de le raccourcir
+        prompt = f"""
+        Le texte suivant est trop long ({current_length} caractères).
+        Tu dois le raccourcir pour qu'il fasse EXACTEMENT entre {min_chars} et {max_chars} caractères.
+        
+        Type de texte : {text_type}
+        Texte actuel : "{text}"
+        
+        Raccourcis ce texte en gardant l'essentiel du message et le même impact.
+        Réponds uniquement avec le texte raccourci, sans guillemets ni explications.
+        """
     
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3  # Moins de créativité, plus de précision
+            temperature=0.3
         )
         
-        result = json.loads(response.choices[0].message.content)
-        return result
+        adjusted_text = response.choices[0].message.content.strip()
+        
+        # Vérifier si l'ajustement a fonctionné
+        if min_chars <= len(adjusted_text) <= max_chars:
+            return adjusted_text
+        else:
+            # Si ça n'a pas marché, faire un ajustement manuel simple
+            if len(adjusted_text) > max_chars:
+                return adjusted_text[:max_chars-3] + "..."
+            elif len(adjusted_text) < min_chars:
+                # Ajouter des points de suspension ou répéter la fin
+                padding_needed = min_chars - len(adjusted_text)
+                return adjusted_text + " " * padding_needed
+            
     except Exception as e:
-        print(f"Erreur lors de la deuxième tentative : {e}")
-        return None
+        print(f"Erreur lors de l'ajustement : {e}")
+        # Fallback : ajustement manuel
+        if current_length > max_chars:
+            return text[:max_chars-3] + "..."
+        else:
+            padding_needed = min_chars - current_length
+            return text + " " * padding_needed
 
 def assign_emotions_to_parts(parts):
     """
     Assigne des émotions cohérentes à chaque partie en utilisant OpenAI
     """
     
+    if client is None:
+        return None
+
     prompt = f"""
     Tu dois assigner une émotion appropriée à chaque partie de ce script vidéo.
     
@@ -175,6 +192,9 @@ def generate_script():
     """
     Endpoint principal pour générer un script à partir d'un article
     """
+    if client is None:
+        return jsonify({'error': 'OPENAI_API_KEY non configurée'}), 500
+
     try:
         data = request.get_json()
         

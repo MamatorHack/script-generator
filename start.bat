@@ -50,7 +50,7 @@ if not exist "src\main.py" (
 echo ✅ Environnement prêt !
 echo.
 echo 🌐 Démarrage du serveur...
-echo 📱 L'application sera accessible à l'adresse : http://localhost:5000
+echo 📱 L'application sera accessible à l'adresse : http://localhost:8080
 echo.
 echo Pour arrêter le serveur, appuyez sur Ctrl+C
 echo.
