@@ -5,6 +5,8 @@ Ces scripts sont optimisés pour la génération audio/vidéo à partir d'avatar
 
 L’interface front-end (HTML) permet de déposer un texte, qui est ensuite traité par une **API Flask** exposée via `src/main.py`.
 
+![image](https://github.com/user-attachments/assets/a9771457-7c05-4e3a-864a-03e86b5af1fa)
+
 ## Fonctionnalités principales
 
 - Découpage automatique en 5 parties (hook, contenu, CTA)
