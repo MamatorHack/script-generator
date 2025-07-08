@@ -1,6 +1,18 @@
 # Script Generator
 
-Cette application transforme un article en cinq segments accompagnés d'une émotion associée. Un front-end HTML appelle une API Flask exposée dans `src/main.py`.
+**Script Generator** est une application qui transforme automatiquement un article ou texte libre en **5 segments courts**, chacun enrichi d’une **émotion cohérente**.  
+Ces scripts sont optimisés pour la génération audio/vidéo à partir d'avatars IA.
+
+L’interface front-end (HTML) permet de déposer un texte, qui est ensuite traité par une **API Flask** exposée via `src/main.py`.
+
+## Fonctionnalités principales
+
+- Découpage automatique en 5 parties (hook, contenu, CTA)
+- Attribution intelligente d’une émotion à chaque bloc
+- Appel à l'API OpenAI pour l’analyse sémantique et émotionnelle
+- Résultat structuré et prêt pour les modules de synthèse multimédia
+
+---
 
 ## Installation
 
