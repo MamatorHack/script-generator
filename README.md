@@ -35,6 +35,8 @@ L’interface front-end (HTML) permet de déposer un texte, qui est ensuite trai
    ```
    L'interface est disponible sur [http://localhost:8080](http://localhost:8080).
 
+---
+
 ## Structure
 
 ```
@@ -43,6 +45,8 @@ src/
   routes/
     script_generator.py
     user.py
+  database/
+    app.db
   models/
     user.py
   static/            # Fichiers front-end
