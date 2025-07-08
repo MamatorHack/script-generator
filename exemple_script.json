@@ -1,0 +1,48 @@
+{
+  "success": true,
+  "script": [
+    {
+      "id": 1,
+      "type": "accroche",
+      "text": "L'intelligence artificielle révolutionne notre quotidien de manière spectaculaire.",
+      "emotion": "surprised",
+      "character_count": 82,
+      "duration_seconds": 12
+    },
+    {
+      "id": 2,
+      "type": "content",
+      "text": "Les algorithmes d'apprentissage automatique permettent aux machines de comprendre et d'analyser des données complexes à une vitesse inégalée, transformant ainsi notre façon de travailler et de vivre. Grâce à ces avancées technologiques, de nombreu...",
+      "emotion": "happy",
+      "character_count": 250,
+      "duration_seconds": 12
+    },
+    {
+      "id": 3,
+      "type": "content",
+      "text": "Cette technologie innovante impacte déjà de nombreux secteurs, de la médecine à l'automobile, en passant par la finance et l'éducation. Elle révolutionne les diagnostics médicaux, améliore la sécurité des véhicules, facilite les transactions finan...",
+      "emotion": "happy",
+      "character_count": 250,
+      "duration_seconds": 12
+    },
+    {
+      "id": 4,
+      "type": "content",
+      "text": "Les assistants virtuels, grâce à l'intelligence artificielle, sont désormais capables de comprendre nos besoins spécifiques et d'anticiper nos demandes. Leur capacité à interagir de manière naturelle avec les utilisateurs les rend indispensables d...",
+      "emotion": "happy",
+      "character_count": 250,
+      "duration_seconds": 12
+    },
+    {
+      "id": 5,
+      "type": "call_to_action",
+      "text": "Embrassons la révolution technologique pour améliorer notre productivité et qualité de vie.",
+      "emotion": "happy",
+      "character_count": 91,
+      "duration_seconds": 12
+    }
+  ],
+  "total_parts": 5,
+  "total_duration": 60
+}
+

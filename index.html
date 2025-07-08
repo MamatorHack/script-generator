@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Scripts Émotionnels</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-video"></i>
+                    <h1>Script Generator AI</h1>
+                </div>
+                <p class="subtitle">Transformez vos articles en scripts vidéo émotionnels</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-edit"></i> Votre Article</h2>
+                        <p>Collez votre article ci-dessous pour le transformer en script structuré</p>
+                    </div>
+                    <div class="card-body">
+                        <textarea 
+                            id="articleInput" 
+                            placeholder="Collez votre article ici... (minimum 50 caractères)"
+                            rows="8"
+                        ></textarea>
+                        <div class="input-info">
+                            <span id="charCount">0 caractères</span>
+                            <span class="min-chars">Minimum requis: 50 caractères</span>
+                        </div>
+                        <button id="generateBtn" class="btn-primary" disabled>
+                            <i class="fas fa-magic"></i>
+                            Générer le Script
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section id="loadingSection" class="loading-section hidden">
+                <div class="loading-card">
+                    <div class="spinner"></div>
+                    <h3>Génération en cours...</h3>
+                    <p>L'IA analyse votre article et crée le script émotionnel</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-film"></i> Script Généré</h2>
+                        <p>Votre article a été transformé en 5 parties avec émotions associées</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="script-overview">
+                            <div class="overview-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Durée totale: <strong id="totalDuration">60 secondes</strong></span>
+                            </div>
+                            <div class="overview-item">
+                                <i class="fas fa-list"></i>
+                                <span>Parties: <strong>5 segments</strong></span>
+                            </div>
+                        </div>
+                        <div id="scriptParts" class="script-parts">
+                            <!-- Les parties du script seront générées ici -->
+                        </div>
+                        <div class="action-buttons">
+                            <button id="downloadBtn" class="btn-secondary">
+                                <i class="fas fa-download"></i>
+                                Télécharger JSON
+                            </button>
+                            <button id="newScriptBtn" class="btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Nouveau Script
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section id="errorSection" class="error-section hidden">
+                <div class="error-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erreur</h3>
+                    <p id="errorMessage">Une erreur s'est produite lors de la génération du script.</p>
+                    <button id="retryBtn" class="btn-primary">
+                        <i class="fas fa-redo"></i>
+                        Réessayer
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Script Generator AI - Propulsé par OpenAI</p>
+                <div class="footer-links">
+                    <a href="#" onclick="showEmotions()">
+                        <i class="fas fa-heart"></i>
+                        Émotions disponibles
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Emotions Modal -->
+    <div id="emotionsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-heart"></i> Émotions Disponibles</h3>
+                <button class="modal-close" onclick="hideEmotions()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="emotions-grid">
+                    <div class="emotion-item">
+                        <div class="emotion-icon happy">😊</div>
+                        <h4>Happy</h4>
+                        <p>Joyeux, enthousiaste</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon sad">😢</div>
+                        <h4>Sad</h4>
+                        <p>Triste, mélancolique</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon angry">😠</div>
+                        <h4>Angry</h4>
+                        <p>Colère, frustration</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon fearful">😨</div>
+                        <h4>Fearful</h4>
+                        <p>Peur, inquiétude</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon disgusted">🤢</div>
+                        <h4>Disgusted</h4>
+                        <p>Dégoût, répulsion</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon surprised">😲</div>
+                        <h4>Surprised</h4>
+                        <p>Surprise, étonnement</p>
+                    </div>
+                    <div class="emotion-item">
+                        <div class="emotion-icon neutral">😐</div>
+                        <h4>Neutral</h4>
+                        <p>Neutre, calme</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
