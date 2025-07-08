@@ -5,23 +5,24 @@ Cette application transforme un article en cinq segments accompagnés d'une émo
 ## Installation
 
 1. **Créer un environnement virtuel**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Windows : venv\Scripts\activate
+   ```bat
+   py -m venv venv
+   venv\Scripts\activate
    ```
 2. **Installer les dépendances**
-   ```bash
+   ```bat
    pip install -r requirements.txt
    ```
 3. **Définir la clé OpenAI**
-   ```bash
-   export OPENAI_API_KEY="votre-cle"
+   ```bat
+   set OPENAI_API_KEY="votre-cle"
    ```
 4. **Lancer l'application**
-   ```bash
-   python src/main.py
+   ```bat
+   python src\main.py
    ```
    L'interface est disponible sur [http://localhost:8080](http://localhost:8080).
+   Vous pouvez également lancer `start.bat` pour automatiser ces étapes.
 
 ## Structure
 
