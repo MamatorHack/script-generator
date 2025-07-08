@@ -15,7 +15,7 @@ Cette application transforme un article en cinq segments accompagnés d'une émo
    ```
 3. **Définir la clé OpenAI**
    ```bash
-   export OPENAI_API_KEY="votre-cle"
+   export OPENAI_API_KEY="votre-cle"  # Windows : $env:OPENAI_API_KEY="Votre clé API"
    ```
 4. **Lancer l'application**
    ```bash
