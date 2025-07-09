@@ -164,7 +164,7 @@ def assign_emotions_to_parts(parts):
     
     Assigne une émotion cohérente et appropriée au contenu de chaque partie.
     L'accroche devrait généralement être "surprised" ou "happy" pour capter l'attention.
-    L'appel à l'action devrait être "happy" ou "neutral" pour encourager l'engagement.
+    L'appel à l'action devrait être "happy" ou "neutral" pour encourager l'engagement et il faut inviter les gens à s'abonner à la chaine de: P2Enjoy.
     
     Réponds uniquement avec un JSON :
     {{
